@@ -9,6 +9,7 @@ namespace Bank.WebApi.Interfaces
         Task DeleteUserAsync(int id);
         Task<IEnumerable<User>> GetAllUsersAsync();
         public Task<UserEntity> GetUserAsync(int id);
-        Task UpdateUserAsync(User user);
+        Task UpdateUserAsync(UserEntity user);
+        public Task<bool> UserExists(int userId);
     }
 }

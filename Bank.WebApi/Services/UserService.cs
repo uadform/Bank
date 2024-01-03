@@ -1,4 +1,5 @@
-﻿using Bank.WebApi.Interfaces;
+﻿using Bank.WebApi.Exceptions;
+using Bank.WebApi.Interfaces;
 using Bank.WebApi.Model.DTOs;
 using Bank.WebApi.Model.Entities;
 
@@ -15,7 +16,7 @@ namespace Bank.WebApi.Services
 
         public async Task<UserEntity> GetUserWithAccountsAsync(int id)
         {
-            var userEntity = await _userRepository.GetUserAsync(id);
+            var userEntity = await _userRepository.GetUserAsync(id) ?? throw new UserNotFoundException("The user does not exist");
 
             if (userEntity == null) return null;
 
@@ -38,15 +39,23 @@ namespace Bank.WebApi.Services
             await _userRepository.CreateUserAsync(user);
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(int id, UserUpdate userDTO)
         {
+            _ = await _userRepository.GetUserAsync(id)?? throw new UserNotFoundException("The user does not exist");
+            var user = new UserEntity
+            {
+                UserId = id,
+                Name = userDTO.Name,
+                Address = userDTO.Address
+            };
+
             await _userRepository.UpdateUserAsync(user);
         }
 
         public async Task DeleteUserAsync(int id)
         {
+            _ = _userRepository.GetUserAsync(id) ?? throw new UserNotFoundException("The user does not exist");
             await _userRepository.DeleteUserAsync(id);
         }
     }
-
 }

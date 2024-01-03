@@ -10,8 +10,8 @@ namespace Bank.WebApi.Interfaces
         public Task<IEnumerable<AccountEntity>> GetAllAccountsAsync();
         public Task<AccountEntity> GetAccountByIdAsync(int accountId);
         public Task TopUpAccountAsync(TopUpEntity topUpEntity);
-        public Task DecreaseBalanceAsync(int accountId, decimal amount);
-        public Task IncreaseBalanceAsync(int accountId, decimal amount);
+        public Task<bool> UserExists(int userId);
+        public Task<AccountEntity> GetAccountByTypeAndUserId(string type, int userId);
 
     }
-}
+}   

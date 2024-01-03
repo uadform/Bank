@@ -1,4 +1,5 @@
-﻿using Bank.WebApi.Interfaces;
+﻿using Bank.WebApi.Exceptions;
+using Bank.WebApi.Interfaces;
 using Bank.WebApi.Model.Entities;
 using Bank.WebApi.Model.Entitities;
 using Dapper;
@@ -57,15 +58,15 @@ namespace Bank.WebApi.Repositories
             WHERE a.AccountId = @AccountId";
 
             var result = await _db.QueryAsync<AccountEntity, UserEntity, AccountEntity>(
-                query,
-                (account, user) =>
-                {
-                    account.User = user;
-                    return account;
-                },
-                new { AccountId = accountId },
-                splitOn: "UserId"
-            );
+            query,
+            (account, user) =>
+            {
+                account.User = user ?? new UserEntity();
+                return account;
+            },
+            new { AccountId = accountId },
+            splitOn: "UserId"
+);
 
             return result.FirstOrDefault()!;
         }
@@ -79,33 +80,29 @@ namespace Bank.WebApi.Repositories
             await _db.ExecuteAsync(insertTopUpQuery, new { AccountId = topUpEntity.AccountId, Amount = topUpEntity.Amount });
         }
 
-        public async Task DecreaseBalanceAsync(int accountId, decimal amount)
+        public async Task DecreaseBalanceAsync(int accountId, decimal amount, IDbTransaction transaction = null)
         {
-            var query = @"
-            UPDATE Accounts 
-            SET Balance = Balance - @Amount 
-            WHERE AccountId = @AccountId AND Balance >= @Amount";
-
-            var rowsAffected = await _db.ExecuteAsync(query, new { AccountId = accountId, Amount = amount });
-
-            if (rowsAffected == 0)
-            {
-                throw new InvalidOperationException("Unable to decrease balance. Insufficient funds or account not found.");
-            }
+            var query = "UPDATE Accounts SET Balance = Balance - @Amount WHERE AccountId = @AccountId";
+            await _db.ExecuteAsync(query, new { AccountId = accountId, Amount = amount }, transaction);
         }
-        public async Task IncreaseBalanceAsync(int accountId, decimal amount)
+
+        public async Task IncreaseBalanceAsync(int accountId, decimal amount, IDbTransaction transaction = null)
         {
-            var query = @"
-            UPDATE Accounts 
-            SET Balance = Balance + @Amount 
-            WHERE AccountId = @AccountId";
+            var query = "UPDATE Accounts SET Balance = Balance + @Amount WHERE AccountId = @AccountId";
+            await _db.ExecuteAsync(query, new { AccountId = accountId, Amount = amount }, transaction);
+        }
 
-            var rowsAffected = await _db.ExecuteAsync(query, new { AccountId = accountId, Amount = amount });
+        public async Task<bool> UserExists(int userId)
+        {
+            var query = "SELECT COUNT(1) FROM Accounts WHERE UserId = @UserId";
+            var count = await _db.ExecuteScalarAsync<int>(query, new { UserId = userId });
+            return count > 0;
+        }
 
-            if (rowsAffected == 0)
-            {
-                throw new InvalidOperationException("Unable to increase balance. Account not found.");
-            }
+        public async Task<AccountEntity> GetAccountByTypeAndUserId(string type, int userId)
+        {
+            var query = "SELECT * FROM Accounts WHERE Type = @Type AND UserId = @UserId";
+            return await _db.QueryFirstOrDefaultAsync<AccountEntity>(query, new { Type = type, UserId = userId });
         }
     }
 }

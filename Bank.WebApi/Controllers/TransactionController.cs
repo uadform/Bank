@@ -26,11 +26,11 @@ namespace Bank.WebApi.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.Message);  
             }
         }
 
-        [HttpGet("User/{userId}")]
+        [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetTransactionsForUser(int userId)
         {
             var transactions = await _transactionsService.GetTransactionsForUserAsync(userId);

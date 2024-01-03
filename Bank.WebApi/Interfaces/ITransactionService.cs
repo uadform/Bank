@@ -6,6 +6,6 @@ namespace Bank.WebApi.Interfaces
     public interface ITransactionService
     {
         public Task CreateTransactionAsync(Transaction transaction);
-        Task<IEnumerable<TransactionEntity>> GetTransactionsForUserAsync(int userId);
+        public Task<IEnumerable<TransactionEntity>> GetTransactionsForUserAsync(int userId);
     }
 }

@@ -1,10 +1,11 @@
-﻿using Bank.WebApi.Model.Entities;
+﻿using Bank.WebApi.Model.DTOs;
+using Bank.WebApi.Model.Entities;
 
 namespace Bank.WebApi.Interfaces
 {
     public interface ITransactionRepository
     {
         Task CreateTransactionAsync(TransactionEntity transaction);
-        Task<IEnumerable<TransactionEntity>> GetTransactionsForUserAsync(int userId);
+        public Task<IEnumerable<TransactionEntity>> GetTransactionsForUserAsync(int userId);
     }
 }

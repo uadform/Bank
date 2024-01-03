@@ -32,7 +32,7 @@ namespace Bank.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] User userDto)
+        public async Task<IActionResult> CreateUser([FromBody] User userDto)
         {
             var userEntity = new UserEntity
             {
@@ -53,19 +53,14 @@ namespace Bank.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] User user)
+        public async Task<IActionResult> EditUser(int id, [FromBody] UserUpdate user)
         {
-            if (id != user.UserId)
-            {
-                return BadRequest();
-            }
-
-            await _userService.UpdateUserAsync(user);
+            await _userService.UpdateUserAsync(id, user);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
             await _userService.DeleteUserAsync(id);
             return NoContent();

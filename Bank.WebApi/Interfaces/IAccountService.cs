@@ -6,7 +6,7 @@ namespace Bank.WebApi.Interfaces
 {
     public interface IAccountService
     {
-        public Task CreateAccountAsync(AccountEntity account);
+        public Task CreateAccountAsync(AccountCreation account);
         public Task<IEnumerable<Account>> GetAllAccountsAsync();
         public Task<Account> GetAccountByIdAsync(int accountId);
         public Task TopUpAccountAsync(TopUpEntity topUpEntity);

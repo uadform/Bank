@@ -32,7 +32,7 @@ namespace Bank.WebApi.Repositories
                 }).ToList();
             }
 
-            return user;
+            return user!;
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -47,16 +47,23 @@ namespace Bank.WebApi.Repositories
             await _db.ExecuteAsync(query, user);
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task UpdateUserAsync(UserEntity user)
         {
-            var query = "UPDATE Users SET Name = @Name, Address = @Address WHERE UserID = @UserId";
-            await _db.ExecuteAsync(query, user);
+            var updateQuery = "UPDATE Users SET Name = @Name, Address = @Address WHERE UserId = @UserId";
+            await _db.ExecuteAsync(updateQuery, user);
         }
 
         public async Task DeleteUserAsync(int id)
         {
             var query = "DELETE FROM Users WHERE UserID = @Id";
             await _db.ExecuteAsync(query, new { Id = id });
+        }
+
+        public async Task<bool> UserExists(int userId)
+        {
+            var query = "SELECT COUNT(1) FROM Users WHERE UserId = @UserId";
+            var count = await _db.ExecuteScalarAsync<int>(query, new { UserId = userId });
+            return count > 0;
         }
     }
 }

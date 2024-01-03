@@ -19,24 +19,10 @@ namespace Bank.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Account accountDto)
+        public async Task<IActionResult> CreateAccount([FromBody] AccountCreation accountCreationDto)
         {
-            try
-            {
-                var accountEntity = new AccountEntity
-                {
-                    UserId = accountDto.UserId,
-                    Type = accountDto.Type,
-                    Balance = accountDto.Balance
-                };
-
-                await _accountService.CreateAccountAsync(accountEntity);
+                await _accountService.CreateAccountAsync(accountCreationDto);
                 return Ok();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
 
         [HttpGet]

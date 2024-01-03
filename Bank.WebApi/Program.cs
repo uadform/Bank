@@ -1,4 +1,5 @@
 using Bank.WebApi.Interfaces;
+using Bank.WebApi.Middlewares;
 using Bank.WebApi.Repositories;
 using Bank.WebApi.Services;
 using DbUp;
@@ -50,5 +51,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.Run();
